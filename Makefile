@@ -1,10 +1,15 @@
 help:
-	@echo 'MAIN USAGE: make {unshare.user, unshare.root, chroot.shell} [ROOT_DIR=<new_root>]'
+	@echo 'RUN USAGE: make {unshare.user, unshare.root, chroot.shell} [ROOT_DIR=<new_root>]'
+	@echo 'IMAGE USAGE: make {initrd, sqsh} [ROOT_DIR=<new_root>]'
 
 # ################
 # Chrooting
 unshare.user_shell:
 	@scripts/invoke-as.sh --unshare-user \
+		$(ROOT_DIR) \
+		/bin/sh
+unshare.root_shell:
+	@scripts/invoke-as.sh --unshare-root \
 		$(ROOT_DIR) \
 		/bin/sh
 unshare.root_init:
@@ -15,6 +20,13 @@ chroot.root_shell:
 	@scripts/invoke-as.sh --chroot \
 		$(ROOT_DIR) \
 		/bin/sh
+
+# ################
+# Create images
+initrd:
+	@scripts/pack-fs.sh --initrd   $(ROOT_DIR)
+sqsh:
+	@scripts/pack-fs.sh --squashfs $(ROOT_DIR)
 
 # ################
 # GIT
